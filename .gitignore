@@ -1,0 +1,34 @@
+﻿# Ignore thư mục hệ thống của Visual Studio
+.vs/
+*.user
+*.suo
+*.cache
+*.log
+*.bak
+*.ncb
+*.opendb
+*.VC.db
+
+# Ignore file build của .NET
+bin/
+obj/
+**/bin/
+**/obj/
+*.dll
+*.exe
+*.pdb
+*.log
+*.lock
+
+# Ignore database và môi trường
+appsettings.Development.json
+appsettings.Local.json
+*.mdf
+*.ldb
+*.sqlite
+*.db
+
+# Ignore các file tạm của IDE
+_ReSharper.*
+*.sln.ide
+*.sln.docstates
