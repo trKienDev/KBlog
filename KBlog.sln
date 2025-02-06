@@ -7,6 +7,18 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KBlog", "KBlog\KBlog.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KBlogTest", "KBlogTest\KBlogTest.csproj", "{B4F1BBF6-1820-4BDC-8F81-C98878461A2A}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{0A87FB30-7FD2-43D5-9A51-CCCD883E08B7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{0628EB22-E888-49E7-B3B7-16ADD09FD9FD}"
+	ProjectSection(SolutionItems) = preProject
+		dotnet.yml = dotnet.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{AFB13FDB-6DBC-40DE-AD34-64BAF21B6605}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +36,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{0628EB22-E888-49E7-B3B7-16ADD09FD9FD} = {0A87FB30-7FD2-43D5-9A51-CCCD883E08B7}
 	EndGlobalSection
 EndGlobal
