@@ -1,0 +1,203 @@
+﻿openapi: 3.1.0
+info:
+  title: API Dự Án
+  description: API phục vụ quản lý người dùng và bài viết trong hệ thống
+  version: 1.0.0
+servers:
+  - url: https://api.example.com
+    description: Production Server
+  - url: http://localhost:5000
+    description: Local Development Server
+
+paths:
+  /users:
+    get:
+      summary: Lấy danh sách người dùng
+      description: Trả về danh sách tất cả người dùng trong hệ thống.
+      responses:
+        '200':
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '500':
+          description: Lỗi server
+
+    post:
+      summary: Tạo mới người dùng
+      description: Thêm một người dùng mới vào hệ thống.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreate'
+      responses:
+        '201':
+          description: Người dùng đã được tạo
+        '400':
+          description: Dữ liệu không hợp lệ
+
+  /users/{id}:
+    get:
+      summary: Lấy thông tin người dùng
+      description: Trả về thông tin chi tiết của một người dùng theo ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID của người dùng
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: Không tìm thấy người dùng
+
+    put:
+      summary: Cập nhật thông tin người dùng
+      description: Chỉnh sửa thông tin của một người dùng.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdate'
+      responses:
+        '200':
+          description: Cập nhật thành công
+        '400':
+          description: Dữ liệu không hợp lệ
+        '404':
+          description: Không tìm thấy người dùng
+
+    delete:
+      summary: Xóa người dùng
+      description: Xóa một người dùng khỏi hệ thống.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Xóa thành công
+        '404':
+          description: Không tìm thấy người dùng
+
+  /posts:
+    get:
+      summary: Lấy danh sách bài viết
+      description: Trả về danh sách bài viết trong hệ thống.
+      responses:
+        '200':
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Post'
+        '500':
+          description: Lỗi server
+
+    post:
+      summary: Tạo bài viết mới
+      description: Đăng một bài viết mới vào hệ thống.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostCreate'
+      responses:
+        '201':
+          description: Bài viết đã được tạo
+        '400':
+          description: Dữ liệu không hợp lệ
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "Nguyễn Văn A"
+        email:
+          type: string
+          example: "nguyenvana@example.com"
+
+    UserCreate:
+      type: object
+      required:
+        - name
+        - email
+      properties:
+        name:
+          type: string
+          example: "Nguyễn Văn A"
+        email:
+          type: string
+          example: "nguyenvana@example.com"
+
+    UserUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "Nguyễn Văn B"
+        email:
+          type: string
+          example: "nguyenvanb@example.com"
+
+    Post:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 101
+        title:
+          type: string
+          example: "Hướng dẫn sử dụng API"
+        content:
+          type: string
+          example: "Đây là nội dung bài viết hướng dẫn API..."
+        authorId:
+          type: integer
+          example: 1
+
+    PostCreate:
+      type: object
+      required:
+        - title
+        - content
+        - authorId
+      properties:
+        title:
+          type: string
+          example: "Hướng dẫn sử dụng API"
+        content:
+          type: string
+          example: "Đây là nội dung bài viết hướng dẫn API..."
+        authorId:
+          type: integer
+          example: 1
