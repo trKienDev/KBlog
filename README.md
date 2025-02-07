@@ -60,5 +60,3 @@ KBlog is a modern, full-stack blogging platform built with **.NET Core Web API**
 - **Azure / AWS Deployment**
 - **Unit Testing with xUnit (Backend) & Jest (Frontend)**
 
-## 📂 Project Structure
-
