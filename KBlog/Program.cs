@@ -72,12 +72,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 
 // Config API Versioning
-//builder.Services.AddApiVersioning(options =>
-//{
-//	options.ReportApiVersions = true;
-//	options.AssumeDefaultVersionWhenUnspecified = true;
-//	options.DefaultApiVersion = new Microsoft.AspNetCore.Mvc.ApiVersion(1, 0);
-//});
+builder.Services.AddApiVersioning(options =>
+{
+	options.ReportApiVersions = true;
+	options.AssumeDefaultVersionWhenUnspecified = true;
+	options.DefaultApiVersion = new Microsoft.AspNetCore.Mvc.ApiVersion(1, 0);
+});
 
 // Config Swagger
 builder.Services.AddEndpointsApiExplorer();
@@ -94,7 +94,7 @@ builder.Services.AddDbContext<KBlogDbContext>(
 		options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Add AuthService
-builder.Services.AddSingleton<AuthService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();

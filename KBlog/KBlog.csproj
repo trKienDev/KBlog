@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
+    <NoWarn>CS7022</NoWarn>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
@@ -37,7 +38,6 @@
 
   <ItemGroup>
     <Folder Include="docs\" />
-    <Folder Include="Tests\Controllers\" />
   </ItemGroup>
 
 </Project>

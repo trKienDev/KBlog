@@ -98,10 +98,11 @@ namespace KBlog.Controllers
 
 		[Authorize]
 		[HttpPut("{id}")]
-		public IActionResult UpdateUser(int id, [FromBody] UpdateUser updateUserDTO) {
+		public IActionResult UpdateUser(int id, [FromBody] UpdateUser? updateUserDTO) {
+			if(updateUserDTO == null) {
+				return BadRequest("Name or Email must be provided.");	
+			}
 			var currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-			Console.WriteLine($"currentUserId: {currentUserId}");
-			Console.WriteLine($"string.currentUserId: {string.IsNullOrEmpty(currentUserId)}");
 			if (string.IsNullOrEmpty(currentUserId))
 			{
 				return Unauthorized("User ID not found in token.");
@@ -121,7 +122,6 @@ namespace KBlog.Controllers
 				return BadRequest("Name or Email must be provided");
 			}
 
-			Console.WriteLine($"updateUserDTO: {updateUserDTO.Email}");
 			if (!string.IsNullOrEmpty(updateUserDTO.UserName)) {
 				user.Name = updateUserDTO.UserName;
 			}
