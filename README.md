@@ -40,9 +40,9 @@ KBlog is a modern, full-stack blogging platform built with **.NET Core Web API**
 ## 🛠️ Tech Stack
 
 ### Backend (ASP.NET Core Web API)
-- **ASP.NET Core 7.0**
+- **ASP.NET Core 8.0**
 - **Entity Framework Core (EF Core)**
-- **PostgreSQL / SQL Server**
+- **SQL Server**
 - **JWT Authentication & OAuth 2.0**
 - **Redis (caching & session management)**
 - **Serilog (logging)**
