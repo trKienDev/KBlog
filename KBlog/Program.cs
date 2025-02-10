@@ -11,10 +11,11 @@ using Serilog;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.FileProviders;
 using System.IO;
-using KBlog.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using KBlog.Services.Interfaces;
+using KBlog.Services.Implementations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -95,6 +96,7 @@ builder.Services.AddDbContext<KBlogDbContext>(
 
 // Add AuthService
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IPostService, PostService>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();

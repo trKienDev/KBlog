@@ -3,17 +3,20 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using System.Security.Claims;
 using KBlog.Models;
+using KBlog.Services.Interfaces;
 
-namespace KBlog.Services
+namespace KBlog.Services.Implementations
 {
 	public class AuthService : IAuthService
 	{
 		private readonly IConfiguration _config;
-		public AuthService(IConfiguration config) {
+		public AuthService(IConfiguration config)
+		{
 			_config = config;
 		}
 
-		public string GenerateJwtToken(User user, string email, string name) {
+		public string GenerateJwtToken(User user, string email, string name)
+		{
 			var tokenHandler = new JwtSecurityTokenHandler();
 			string? secretKey = _config["Jwt:Secret"];
 			if (string.IsNullOrEmpty(secretKey) || secretKey.Length < 32)

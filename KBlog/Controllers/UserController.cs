@@ -6,11 +6,11 @@ using KBlog.Models;
 using KBlog.DTOs;
 using KBlog.Data;
 using Microsoft.EntityFrameworkCore;
-using KBlog.Services;
 using System.Runtime.CompilerServices;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using KBlog.Services.Interfaces;
 
 namespace KBlog.Controllers
 {
@@ -29,7 +29,7 @@ namespace KBlog.Controllers
 		[HttpPost("register")]
 		public async Task<IActionResult> Register([FromBody] RegisterRequest model) {
 			var existingUser = await _dbContext.Users.FirstOrDefaultAsync(user => user.Email == model.Email);
-
+			 
 			if (existingUser != null)
 				return BadRequest("Email exists !");
 

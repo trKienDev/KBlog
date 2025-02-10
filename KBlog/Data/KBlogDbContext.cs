@@ -12,6 +12,7 @@ namespace KBlog.Data
 
 		// Định nghĩa các bảng trong database (DbSet<T>)
 		public DbSet<User> Users { get; set; }
+		public DbSet<Post> Posts { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{

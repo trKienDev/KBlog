@@ -5,7 +5,7 @@ using KBlog.Controllers;
 using KBlog.Data;
 using KBlog.DTOs;
 using KBlog.Models;
-using KBlog.Services;
+using KBlog.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -24,7 +24,6 @@ namespace KBlogTest.Controllers
 {
 	public class UserControllerTest
 	{
-		// private readonly Mock<IUserService> _userServiceMock;
 		private readonly UserController _controller;
 		private readonly Mock<IAuthService> _authServiceMock;
 		private readonly KBlogDbContext _dbContext;
