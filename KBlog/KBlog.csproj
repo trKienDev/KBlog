@@ -8,10 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="docs\**" />
-    <Content Remove="docs\**" />
-    <EmbeddedResource Remove="docs\**" />
-    <None Remove="docs\**" />
+	<Compile Remove="docs\**" />
+	<Content Remove="docs\**" />
+	<EmbeddedResource Remove="docs\**" />
+	<None Remove="docs\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -42,5 +42,4 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
   </ItemGroup>
-
 </Project>

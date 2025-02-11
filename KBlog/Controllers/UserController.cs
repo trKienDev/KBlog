@@ -10,7 +10,7 @@ using System.Runtime.CompilerServices;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
-using KBlog.Services.Interfaces;
+using KBlog.Services;
 
 namespace KBlog.Controllers
 {

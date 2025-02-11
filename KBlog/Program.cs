@@ -14,8 +14,8 @@ using System.IO;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using KBlog.Services.Interfaces;
-using KBlog.Services.Implementations;
+using KBlog.Services;
+using KBlog.Data.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -97,6 +97,7 @@ builder.Services.AddDbContext<KBlogDbContext>(
 // Add AuthService
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IPostService, PostService>();
+builder.Services.AddScoped<IPostRepository, PostRepository>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();

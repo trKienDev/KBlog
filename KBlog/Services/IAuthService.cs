@@ -1,6 +1,6 @@
 ﻿using KBlog.Models;
 
-namespace KBlog.Services.Interfaces
+namespace KBlog.Services
 {
 	public interface IAuthService
 	{

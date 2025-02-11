@@ -5,7 +5,7 @@ using KBlog.Controllers;
 using KBlog.Data;
 using KBlog.DTOs;
 using KBlog.Models;
-using KBlog.Services.Interfaces;
+using KBlog.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

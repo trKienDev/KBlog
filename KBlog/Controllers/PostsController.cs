@@ -1,5 +1,5 @@
 ﻿using KBlog.DTOs;
-using KBlog.Services.Interfaces;
+using KBlog.Services;
 using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
@@ -38,7 +38,6 @@ public class PostsController : ControllerBase
 		var posts = await _postService.GetAllPostAsync(page);
 		return Ok(posts);
 	}
-
 	// Lấy chi tiết bài viết theo ID
 	[HttpGet("{id}")]
 	public async Task<IActionResult> GetPostById(int id)

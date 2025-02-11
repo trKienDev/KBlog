@@ -1,9 +1,12 @@
-﻿using KBlog.Data.Repository;
+
+using KBlog.Data.Repository;
 using KBlog.DTOs;
 using KBlog.Models;
-using KBlog.Services.Interfaces;
+using KBlog.Data;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic;
 
-namespace KBlog.Services.Implementations
+namespace KBlog.Services
 {
 	public class PostService : IPostService
 	{
@@ -73,6 +76,7 @@ namespace KBlog.Services.Implementations
 		public async Task<PostDTO?> UpdatePostAsync(int id, UpdatePostDTO postDTO)
 		{
 			var post = await _postRepository.GetPostByIdAsync(id);
+
 			if (post == null)
 			{
 				return null;
@@ -103,7 +107,6 @@ namespace KBlog.Services.Implementations
 			{
 				return false;
 			}
-
 			return await _postRepository.DeletePostAsync(post);
 		}
 	}
