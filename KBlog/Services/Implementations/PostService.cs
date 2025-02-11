@@ -1,12 +1,12 @@
-
-using KBlog.Data.Repository;
 using KBlog.DTOs;
 using KBlog.Models;
 using KBlog.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualBasic;
+using KBlog.Services.Interfaces;
+using KBlog.Data.Repository.Interfaces;
 
-namespace KBlog.Services
+namespace KBlog.Services.Implementations
 {
 	public class PostService : IPostService
 	{

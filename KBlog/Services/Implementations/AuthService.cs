@@ -3,8 +3,9 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using System.Security.Claims;
 using KBlog.Models;
+using KBlog.Services.Interfaces;
 
-namespace KBlog.Services
+namespace KBlog.Services.Implementations
 {
 	public class AuthService : IAuthService
 	{

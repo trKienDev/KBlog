@@ -1,6 +1,6 @@
 ﻿using KBlog.DTOs;
 
-namespace KBlog.Services
+namespace KBlog.Services.Interfaces
 {
 	public interface IPostService
 	{

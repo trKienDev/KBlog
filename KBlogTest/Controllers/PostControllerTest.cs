@@ -1,5 +1,5 @@
 ﻿using KBlog.DTOs;
-using KBlog.Services;
+using KBlog.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualBasic;
 using Moq;

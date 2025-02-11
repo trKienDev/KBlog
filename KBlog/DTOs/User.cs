@@ -2,6 +2,15 @@
 
 namespace KBlog.DTOs
 {
+	public class UserDTO
+	{
+		public int Id { get; set; }
+		public string Name { get; set; } = string.Empty;
+		public string Email { get; set; } = string.Empty;
+		public string Password_hash { get; set; } = string.Empty;
+		public string Role { get; set; } = string.Empty ;
+	}
+
 	public class RegisterRequest
 	{
 		[Required]

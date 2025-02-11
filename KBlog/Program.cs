@@ -14,8 +14,10 @@ using System.IO;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using KBlog.Services;
-using KBlog.Data.Repository;
+using KBlog.Services.Interfaces;
+using KBlog.Services.Implementations;
+using KBlog.Data.Repository.Interfaces;
+using KBlog.Data.Repository.Implementations;
 
 var builder = WebApplication.CreateBuilder(args);
 

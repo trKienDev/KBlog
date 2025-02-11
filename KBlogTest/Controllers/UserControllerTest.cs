@@ -5,7 +5,7 @@ using KBlog.Controllers;
 using KBlog.Data;
 using KBlog.DTOs;
 using KBlog.Models;
-using KBlog.Services;
+using KBlog.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -58,7 +58,7 @@ namespace KBlogTest.Controllers
 															It.IsAny<string>(),
 															It.IsAny<string>()))
 															.Returns("mock-jwt-token");
-			
+
 			// Act
 			var result = await _controller.Register(request);
 
@@ -122,14 +122,15 @@ namespace KBlogTest.Controllers
 
 			// Assert
 			var okResult = Assert.IsType<OkObjectResult>(result);
-			var json = JsonConvert.SerializeObject(okResult.Value); 
+			var json = JsonConvert.SerializeObject(okResult.Value);
 			var response = JsonConvert.DeserializeObject<dynamic>(json);
 			string token = response?.token ?? "";
 			Assert.Equal("mock-jwt-token", token);
 		}
-		
+
 		[Fact]
-		public async Task Login_EmailNotExist_ReturnUnauthorized() {
+		public async Task Login_EmailNotExist_ReturnUnauthorized()
+		{
 			// Arrange
 			var request = new LoginRequest
 			{
@@ -177,9 +178,10 @@ namespace KBlogTest.Controllers
 			Assert.Equal(401, unauthorizedResult.StatusCode);
 			Assert.Equal("Invalid email or password", unauthorizedResult.Value);
 		}
-		
+
 		[Fact]
-		public async Task GetProfile_AuthenticatedUser_ReturnOk() {
+		public async Task GetProfile_AuthenticatedUser_ReturnOk()
+		{
 			// Arrange
 			var userId = 1;
 			var user = new User
@@ -223,7 +225,8 @@ namespace KBlogTest.Controllers
 		}
 
 		[Fact]
-		public void GetProfile_UserIdNOtFoundInToken_ReturnsUnauthorized() {
+		public void GetProfile_UserIdNOtFoundInToken_ReturnsUnauthorized()
+		{
 			// Arrange
 			var claims = new List<Claim>(); // Ko có Claim NameIdentifier
 			var identity = new ClaimsIdentity(claims, "TestAuthType");
@@ -271,7 +274,8 @@ namespace KBlogTest.Controllers
 		}
 
 		[Fact]
-		public async Task UpdateUser_Success_ReturnOk() {
+		public async Task UpdateUser_Success_ReturnOk()
+		{
 			_dbContext.Users.RemoveRange(_dbContext.Users);
 			await _dbContext.SaveChangesAsync();
 			// Arrange
@@ -318,7 +322,8 @@ namespace KBlogTest.Controllers
 		}
 
 		[Fact]
-		public void UpdateUser_UserNotAuthenticated_ReturnsUnauthorized() {
+		public void UpdateUser_UserNotAuthenticated_ReturnsUnauthorized()
+		{
 			// Arrange
 			var updateUserDTO = new UpdateUser
 			{
@@ -341,7 +346,8 @@ namespace KBlogTest.Controllers
 		}
 
 		[Fact]
-		public async Task UpdateUser_UnauthorizedUser_ReturnForbid() {
+		public async Task UpdateUser_UnauthorizedUser_ReturnForbid()
+		{
 			// Arrange
 			var user = new User
 			{
@@ -376,7 +382,8 @@ namespace KBlogTest.Controllers
 		}
 
 		[Fact]
-		public async Task UpdateUser_EmptyUpdate_ReturnsBadRequest() {
+		public async Task UpdateUser_EmptyUpdate_ReturnsBadRequest()
+		{
 			// Arrange
 			var user = new User
 			{
@@ -405,9 +412,10 @@ namespace KBlogTest.Controllers
 			Assert.Equal(400, badRequestResult.StatusCode);
 			Assert.Equal("Name or Email must be provided.", badRequestResult.Value);
 		}
-		
+
 		[Fact]
-		public async Task DeleteUser_Admin_Success_ReturnNoContent() {
+		public async Task DeleteUser_Admin_Success_ReturnNoContent()
+		{
 			// Arrange
 			var adminUserId = "1";
 			var userToDelete = new User
@@ -439,7 +447,8 @@ namespace KBlogTest.Controllers
 		}
 
 		[Fact]
-		public async Task DeleteUser_Owner_Success_ReturnNoContent() {
+		public async Task DeleteUser_Owner_Success_ReturnNoContent()
+		{
 			// Arrange
 			var userId = "1";
 			var user = new User
@@ -458,7 +467,7 @@ namespace KBlogTest.Controllers
 			var claimsPrincipal = new ClaimsPrincipal(identity);
 			_controller.ControllerContext = new ControllerContext
 			{
-				HttpContext = new DefaultHttpContext { User= claimsPrincipal }
+				HttpContext = new DefaultHttpContext { User = claimsPrincipal }
 			};
 
 			// Act
@@ -469,7 +478,8 @@ namespace KBlogTest.Controllers
 		}
 
 		[Fact]
-		public void DeleteUser_UserNotAuthenticated_ReturnUnauthorized() {
+		public void DeleteUser_UserNotAuthenticated_ReturnUnauthorized()
+		{
 			// Arrange
 			_controller.ControllerContext = new ControllerContext
 			{
@@ -486,7 +496,8 @@ namespace KBlogTest.Controllers
 		}
 
 		[Fact]
-		public void DeleteUser_UserNotFoun_ReturnsNotFound() {
+		public void DeleteUser_UserNotFoun_ReturnsNotFound()
+		{
 			// Arrange
 			var UserId = "1";
 			var claims = new List<Claim> {
@@ -510,7 +521,8 @@ namespace KBlogTest.Controllers
 		}
 
 		[Fact]
-		public async Task DeleteUser_UnauthorizedUser_ReturnsForbid() {
+		public async Task DeleteUser_UnauthorizedUser_ReturnsForbid()
+		{
 			// Arrange
 			var ownerUserId = "1";
 			var otherUserId = "2";

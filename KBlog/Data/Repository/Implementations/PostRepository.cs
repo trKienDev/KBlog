@@ -1,8 +1,9 @@
-﻿using KBlog.Models;
+﻿using KBlog.Data.Repository.Interfaces;
+using KBlog.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
 
-namespace KBlog.Data.Repository
+namespace KBlog.Data.Repository.Implementations
 {
 	public class PostRepository : IPostRepository
 	{

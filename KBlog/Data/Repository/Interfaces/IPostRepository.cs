@@ -1,6 +1,6 @@
 ﻿using KBlog.Models;
 
-namespace KBlog.Data.Repository
+namespace KBlog.Data.Repository.Interfaces
 {
 	public interface IPostRepository
 	{
