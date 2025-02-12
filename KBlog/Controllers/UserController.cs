@@ -86,7 +86,13 @@ namespace KBlog.Controllers
 
 		[Authorize]
 		[HttpGet("all")]
-		public async Task<IActionResult> GetAllUsers() {
+		public async Task<IActionResult> GetAllUsers()
+		{
+			if (User?.Identity == null || !User.Identity.IsAuthenticated)
+			{
+				return Unauthorized();
+			}
+
 			var users = await _userService.GetAllUsersAsync();
 			return Ok(users);
 		}
