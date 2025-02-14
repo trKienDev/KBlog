@@ -96,10 +96,15 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddDbContext<KBlogDbContext>(
 		options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Add AuthService
+// Service
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IPostService, PostService>();
 builder.Services.AddScoped<IPostRepository, PostRepository>();
+builder.Services.AddScoped<ICommentRepository, CommentRepository>();
+builder.Services.AddScoped<ICommentService, CommentService>();
+
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();

@@ -26,7 +26,6 @@ namespace KBlogTest.Controllers {
 			var options = new DbContextOptionsBuilder<KBlogDbContext>()
 						.UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
 						.Options;
-
 			_dbContext = new KBlogDbContext(options);
 			_mockUserService = new Mock<IUserService>();
 			_mockAuthService = new Mock<IAuthService>();

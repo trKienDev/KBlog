@@ -41,7 +41,8 @@ namespace KBlog.Services.Implementations
 			{
 				Id = user.Id,
 				Name = user.Name,
-				Email = email
+				Email = email,
+				Password_hash = user.Password_hash
 			};
 		}
 

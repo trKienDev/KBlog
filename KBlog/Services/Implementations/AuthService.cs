@@ -42,5 +42,9 @@ namespace KBlog.Services.Implementations
 			var token = tokenHandler.CreateToken(tokenDescriptor);
 			return tokenHandler.WriteToken(token);
 		}
+
+		public int GetUserIdFromClaims(ClaimsPrincipal user) {
+			return int.Parse(user.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+		}
 	}
 }
