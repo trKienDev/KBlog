@@ -32,8 +32,7 @@ namespace KBlog.Data
 			modelBuilder.Entity<Comment>().HasOne(c => c.ParrentComment)
 										.WithMany(c => c.Replies)
 										.HasForeignKey(c => c.ParentId)
-										.OnDelete(DeleteBehavior.NoAction); // Ko tự động xoá comment cha
-								
+										.OnDelete(DeleteBehavior.NoAction); // Ko tự động xoá comment cha							
 		}
 	}
 }

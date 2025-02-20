@@ -30,11 +30,12 @@ builder.Host.UseSerilog((context, config) =>
 // Config CORS
 builder.Services.AddCors(options =>
 {
-	options.AddPolicy("AllowAll", policy =>
+	options.AddPolicy("AllowSpecificOrigins", policy =>
 	{
-		policy.AllowAnyOrigin()
+		policy.WithOrigins("http://localhost:5173")
 		      .AllowAnyMethod()
-		      .AllowAnyHeader();
+		      .AllowAnyHeader()
+		      .AllowCredentials();
 	});
 });
 
@@ -147,7 +148,7 @@ if (app.Environment.IsDevelopment())
 }
 
 // CORS
-app.UseCors("AllowAll");
+app.UseCors("AllowSpecificOrigins");
 //Middleware Authentication & Authorization
 app.UseAuthentication();
 app.UseAuthorization();

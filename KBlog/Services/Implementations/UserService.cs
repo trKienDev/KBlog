@@ -22,11 +22,27 @@ namespace KBlog.Services.Implementations
 				throw new Exception("Email exist!");
 			}
 
+			string profileImagePath = string.Empty;
+			if(model.ProfileImage != null) {
+				var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads");
+				if(!Directory.Exists(uploadsFolder)) {
+					Directory.CreateDirectory(uploadsFolder);
+				}
+				string uniqueFileName = Guid.NewGuid().ToString() + "_" + model.ProfileImage.FileName;
+				string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+				using(var stream = new FileStream(filePath, FileMode.Create)) {
+					await model.ProfileImage.CopyToAsync(stream);
+				}
+
+				profileImagePath = "/uploads/" + uniqueFileName;	
+			}
+
 			var user = new User
 			{
 				Name = model.UserName,
 				Email = model.Email,
 				Password_hash = BCrypt.Net.BCrypt.HashPassword(model.Password),
+				ProfileImageUrl = profileImagePath // Lưu paht vào DB
 			};
 
 			await _userRepository.AddUserAsync(user);
@@ -42,7 +58,8 @@ namespace KBlog.Services.Implementations
 				Id = user.Id,
 				Name = user.Name,
 				Email = email,
-				Password_hash = user.Password_hash
+				Password_hash = user.Password_hash,
+				ProfileImageUrl = user.ProfileImageUrl,
 			};
 		}
 

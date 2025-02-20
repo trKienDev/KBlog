@@ -9,10 +9,14 @@ namespace KBlog.DTOs
 		public string Email { get; set; } = string.Empty;
 		public string Password_hash { get; set; } = string.Empty;
 		public string Role { get; set; } = string.Empty ;
+		public string? ProfileImageUrl { get; set; }
 	}
 
 	public class RegisterRequest
 	{
+		[Required]
+		public string Name { get; set; } = string.Empty;
+
 		[Required]
 		public string UserName { get; set; } = string.Empty;
 
@@ -21,6 +25,8 @@ namespace KBlog.DTOs
 
 		[Required, MinLength(6)]
 		public string Password { get; set; } = string.Empty;
+
+		public IFormFile? ProfileImage { get; set; }
 	}
 
 	public class LoginRequest

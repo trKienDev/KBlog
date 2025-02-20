@@ -25,18 +25,18 @@ namespace KBlog.Services.Implementations
 			}
 			var key = Encoding.UTF8.GetBytes(secretKey);
 
+			var claims = new List<Claim> {
+				new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+				new Claim(ClaimTypes.Email, user.Email),
+				new Claim(ClaimTypes.Name, user.Name),
+				new Claim(ClaimTypes.Role, user.Role),
+			};
+
 			var tokenDescriptor = new SecurityTokenDescriptor
 			{
-				Subject = new ClaimsIdentity(new[] {
-					new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-					new Claim("name", name),
-					new Claim("email", email),
-				}),
+				Subject = new ClaimsIdentity(claims),
 				Expires = DateTime.UtcNow.AddHours(2),
-				SigningCredentials = new SigningCredentials(
-					new SymmetricSecurityKey(key),
-					SecurityAlgorithms.HmacSha256Signature
-				)
+				SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
 			};
 
 			var token = tokenHandler.CreateToken(tokenDescriptor);

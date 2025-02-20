@@ -29,7 +29,7 @@ namespace KBlog.Controllers
 		}
 
 		[HttpPost("register")]
-		public async Task<IActionResult> Register([FromBody] RegisterRequest model) {
+		public async Task<IActionResult> Register([FromForm] RegisterRequest model) {
 			try
 			{
 				var existingUser = await _userService.GetUserByEmailAsync(model.Email);
@@ -38,11 +38,11 @@ namespace KBlog.Controllers
 					return BadRequest("Email exists!");
 				}
 				await _userService.RegisterUserAsync(model);
-				return Ok(new { message = "Register Successfully" });
+				return Ok(new { message = "Register Successfully", success = true });
 			}
 			catch (System.Exception ex)
 			{
-				return BadRequest(ex.Message);
+				return BadRequest(new { error = ex.Message });
 			}
 		}
 
