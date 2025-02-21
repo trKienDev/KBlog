@@ -11,6 +11,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using KBlog.Services.Interfaces;
+using KBlog.Services;
 
 namespace KBlog.Controllers
 {
@@ -21,27 +22,41 @@ namespace KBlog.Controllers
 		private readonly KBlogDbContext _dbContext;
 		private readonly IAuthService _authService;
 		private readonly IUserService _userService;
+		private readonly IEmailService _emailService;
 
-		public UserController(KBlogDbContext context, IAuthService authService, IUserService userService) {
+		public UserController(KBlogDbContext context, IAuthService authService, IUserService userService, IEmailService emailService) {
 			_dbContext = context;
 			_authService = authService;
 			_userService = userService;
+			_emailService = emailService;
 		}
 
 		[HttpPost("register")]
-		public async Task<IActionResult> Register([FromForm] RegisterRequest model) {
+		public async Task<IActionResult> Register([FromForm] RegisterRequest model)
+		{
 			try
 			{
-				var existingUser = await _userService.GetUserByEmailAsync(model.Email);
-				if (existingUser != null)
+				var user = await _userService.RegisterUserAsync(model);
+				if (user == null)
 				{
-					return BadRequest("Email exists!");
+					return BadRequest("User registration failed.");
 				}
-				await _userService.RegisterUserAsync(model);
-				return Ok(new { message = "Register Successfully", success = true });
+
+				// Tạo đường link xác thực
+				var verifyLink = $"{Request.Scheme}://{Request.Host}/api/email/verify?token={user.EmailVerificationToken}&email={user.Email}";
+				var emailBody = $"<p>Click vào link sau để xác thực email của bạn:</p><a href='{verifyLink}'>Xác thực Email</a>";
+
+				Console.WriteLine($"🔹 Sending verification email to {user.Email} with link: {verifyLink}");
+
+				await _emailService.SendEmailAsync(user.Email, "Xác thực tài khoản", emailBody);
+
+				Console.WriteLine($"✅ Email sent successfully to {user.Email}");
+
+				return Ok(new { message = "Register Successfully. Please check your email to verify your account.", success = true });
 			}
-			catch (System.Exception ex)
+			catch (Exception ex)
 			{
+				Console.WriteLine($"❌ Error sending email: {ex.Message}");
 				return BadRequest(new { error = ex.Message });
 			}
 		}

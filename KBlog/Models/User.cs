@@ -34,5 +34,11 @@ namespace KBlog.Models
 
 		[Required]
 		public bool isDeleted { get; set; } = false; // Hỗ trợ xóa mềm
+
+		[StringLength (100)]
+		public string? EmailVerificationToken { get; set; } = Guid.NewGuid().ToString();
+
+		[Required]
+		public bool IsEmailVerified { get; set; } = false; // mặc định chưa xác minh
 	}
 }

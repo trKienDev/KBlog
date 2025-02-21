@@ -14,27 +14,31 @@ namespace KBlog.Services.Implementations
 		{
 			_userRepository = userRepository;
 		}
-		public async Task RegisterUserAsync(RegisterRequest model)
+
+		public async Task<User> RegisterUserAsync(RegisterRequest model)
 		{
 			var existingUser = await _userRepository.GetUserByEmailAsync(model.Email);
 			if (existingUser != null)
 			{
-				throw new Exception("Email exist!");
+				throw new Exception("Email exists!");
 			}
 
 			string profileImagePath = string.Empty;
-			if(model.ProfileImage != null) {
+			if (model.ProfileImage != null)
+			{
 				var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads");
-				if(!Directory.Exists(uploadsFolder)) {
+				if (!Directory.Exists(uploadsFolder))
+				{
 					Directory.CreateDirectory(uploadsFolder);
 				}
 				string uniqueFileName = Guid.NewGuid().ToString() + "_" + model.ProfileImage.FileName;
 				string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-				using(var stream = new FileStream(filePath, FileMode.Create)) {
+				using (var stream = new FileStream(filePath, FileMode.Create))
+				{
 					await model.ProfileImage.CopyToAsync(stream);
 				}
 
-				profileImagePath = "/uploads/" + uniqueFileName;	
+				profileImagePath = "/uploads/" + uniqueFileName;
 			}
 
 			var user = new User
@@ -42,11 +46,15 @@ namespace KBlog.Services.Implementations
 				Name = model.UserName,
 				Email = model.Email,
 				Password_hash = BCrypt.Net.BCrypt.HashPassword(model.Password),
-				ProfileImageUrl = profileImagePath // Lưu paht vào DB
+				ProfileImageUrl = profileImagePath,
+				EmailVerificationToken = Guid.NewGuid().ToString(), // ✅ Đảm bảo giá trị không NULL
+				IsEmailVerified = false // ✅ Đảm bảo giá trị không NULL
 			};
 
 			await _userRepository.AddUserAsync(user);
 			await _userRepository.SaveChangesAsync();
+			Console.WriteLine($"📌 Token saved to DB: {user.EmailVerificationToken}");
+			return user;
 		}
 
 		public async Task<UserDTO?> GetUserByEmailAsync(string email)

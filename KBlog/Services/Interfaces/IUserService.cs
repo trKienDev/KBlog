@@ -1,10 +1,11 @@
 ﻿using KBlog.DTOs;
+using KBlog.Models;
 
 namespace KBlog.Services.Interfaces
 {
 	public interface IUserService
 	{
-		Task RegisterUserAsync(RegisterRequest model);
+		Task<User> RegisterUserAsync(RegisterRequest model);
 		Task<UserDTO?> GetUserByEmailAsync(string email);
 		Task<UserDTO?> GetUserByIdAsync(int id);
 		Task<IEnumerable<UserDTO>> GetAllUsersAsync();
