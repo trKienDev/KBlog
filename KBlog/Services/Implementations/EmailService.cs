@@ -23,7 +23,6 @@ namespace KBlog.Services.Implementations
 
 		public async Task SendEmailAsync(string to, string subject, string body)
 		{
-			Console.WriteLine($"📌 Email Content: {body}");
 			string? smtpServer = _configuration["EmailSettings:SmtpServer"];
 			string? smtpPortStr = _configuration["EmailSettings:SmtpPort"];
 			string? senderEmail = _configuration["EmailSettings:SenderEmail"];
@@ -38,8 +37,8 @@ namespace KBlog.Services.Implementations
 				throw new ArgumentNullException("SMTP configuration is missing in appsettings.json");
 			}
 
-			int smtpPort = int.TryParse(smtpPortStr, out int port) ? port : 587; // Mặc định 587 nếu lỗi
-			bool enableSsl = bool.TryParse(enableSslStr, out bool ssl) ? ssl : true; // Mặc định true nếu lỗi
+			int smtpPort = int.TryParse(smtpPortStr, out int port) ? port : 587; 
+			bool enableSsl = bool.TryParse(enableSslStr, out bool ssl) ? ssl : true; 
 
 			var smtpClient = new System.Net.Mail.SmtpClient(smtpServer)
 			{
@@ -63,22 +62,16 @@ namespace KBlog.Services.Implementations
 
 		public async Task<bool> VerifyEmailAsync(string token, string email)
 		{
-			Console.WriteLine($"🔍 Checking database for token: {token} and email: {email}");
-
 			var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
 			if (user == null)
 			{
-				Console.WriteLine("❌ ERROR: No matching user found.");
 				return false;
 			}
 
 			if (user.EmailVerificationToken != token)
 			{
-				Console.WriteLine($"❌ ERROR: Token mismatch! Expected: {user.EmailVerificationToken}, Received: {token}");
 				return false;
 			}
-
-			Console.WriteLine("✅ User found, updating verification status.");
 			user.IsEmailVerified = true;
 			user.EmailVerificationToken = null; // Xóa token sau khi xác thực
 			await _dbContext.SaveChangesAsync();

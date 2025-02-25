@@ -42,21 +42,15 @@ namespace KBlog.Controllers
 					return BadRequest("User registration failed.");
 				}
 
-				// Tạo đường link xác thực
 				var verifyLink = $"{Request.Scheme}://{Request.Host}/api/email/verify?token={user.EmailVerificationToken}&email={user.Email}";
-				var emailBody = $"<p>Click vào link sau để xác thực email của bạn:</p><a href='{verifyLink}'>Xác thực Email</a>";
-
-				Console.WriteLine($"🔹 Sending verification email to {user.Email} with link: {verifyLink}");
-
-				await _emailService.SendEmailAsync(user.Email, "Xác thực tài khoản", emailBody);
-
-				Console.WriteLine($"✅ Email sent successfully to {user.Email}");
+				string templatePath = Path.Combine(Directory.GetCurrentDirectory(), "Resources", "Templates", "VerifyEmailTemplate.html");
+				string emailBody = System.IO.File.ReadAllText(templatePath).Replace("{verifyLink}", verifyLink);
+				await _emailService.SendEmailAsync(user.Email, "Xác thực tài khoản KBlog", emailBody);
 
 				return Ok(new { message = "Register Successfully. Please check your email to verify your account.", success = true });
 			}
 			catch (Exception ex)
 			{
-				Console.WriteLine($"❌ Error sending email: {ex.Message}");
 				return BadRequest(new { error = ex.Message });
 			}
 		}

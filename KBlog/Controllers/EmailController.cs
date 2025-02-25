@@ -1,8 +1,10 @@
 ﻿using KBlog.Data;
+using KBlog.Hubs;
 using KBlog.Services.Implementations;
 using KBlog.Services.Interfaces;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace KBlog.Controllers
@@ -11,10 +13,12 @@ namespace KBlog.Controllers
 	[ApiController]
 	public class EmailController : Controller
 	{
+		private readonly IHubContext<EmailVerificationHub> _hubContext;
 		private readonly IEmailService _emailService;
 
-		public EmailController(IEmailService emailService)
+		public EmailController(IHubContext<EmailVerificationHub> hubContext, IEmailService emailService)
 		{
+			_hubContext = hubContext;
 			_emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
 		}
 
@@ -27,19 +31,42 @@ namespace KBlog.Controllers
 		[HttpGet("verify")]
 		public async Task<IActionResult> VerifyEmail(string token, string email)
 		{
-			Console.WriteLine($"📩 Received Verification Request");
-			Console.WriteLine($"📌 Token from URL: {token}");
-			Console.WriteLine($"📌 Email from URL: {email}");
-
 			bool isVerified = await _emailService.VerifyEmailAsync(token, email);
 			if (!isVerified)
 			{
-				Console.WriteLine("❌ ERROR: Invalid token or expired.");
-				return BadRequest(new { message = "Invalid verification link or token expired." });
+				return Content(@"
+				<html>
+					<head>
+						<meta http-equiv='refresh' content='3;url=https://yourdomain.com/email-verification-failed' />
+						<style>
+							body { text-align: center; padding: 50px; font-family: Arial, sans-serif; }
+							.message { color: red; font-size: 20px; }
+						</style>
+					</head>
+					<body>
+						<h2 class='message'>❌ Xác thực thất bại! Link không hợp lệ hoặc đã hết hạn.</h2>
+						<p>Bạn sẽ được chuyển về trang đăng ký trong 3 giây...</p>
+					</body>
+				</html>", "text/html");
 			}
 
-			Console.WriteLine("✅ Email verified successfully.");
-			return Ok(new { message = "Email verified successfully. You can now log in." });
+			// Gửi tín hiệu cho Tab A (trang Register) - dựa trên email
+			//    Tương ứng logic Clients.User(email).SendAsync("EmailVerified", email)
+			await _hubContext.Clients.User(email).SendAsync("EmailVerified", email);
+
+			// 2) Xử lý kết quả cho Tab B
+			//    Ở đây, tuỳ bạn muốn show HTML "Success" hay redirect
+			//    redirect -> Mở "http://localhost:5173/email-verified?email=..." (tab B)
+			//    hoặc hiển thị HTML
+			// Ví dụ ta trả về 1 trang HTML đơn giản
+			return Content(@"
+				<html>
+					<body>
+						<h2>✅ Email verified successfully!</h2>
+						<p>You can close this tab now and return to your application.</p>
+					</body>
+				</html>", 
+			"text/html");
 		}
 
 		public class EmailRequest

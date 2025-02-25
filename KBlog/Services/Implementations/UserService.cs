@@ -53,7 +53,7 @@ namespace KBlog.Services.Implementations
 
 			await _userRepository.AddUserAsync(user);
 			await _userRepository.SaveChangesAsync();
-			Console.WriteLine($"📌 Token saved to DB: {user.EmailVerificationToken}");
+
 			return user;
 		}
 

@@ -18,6 +18,10 @@ using KBlog.Services.Interfaces;
 using KBlog.Services.Implementations;
 using KBlog.Data.Repository.Interfaces;
 using KBlog.Data.Repository.Implementations;
+using KBlog.Hubs;
+using Microsoft.AspNetCore.SignalR;
+using System.Security.Claims;
+using KBlog.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -74,7 +78,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 		};
 	});
 
-
 // Config API Versioning
 builder.Services.AddApiVersioning(options =>
 {
@@ -106,9 +109,18 @@ builder.Services.AddScoped<IPostRepository, PostRepository>();
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 builder.Services.AddScoped<ICommentService, CommentService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IWebSocketService, WebSocketService>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddSignalR()
+	.AddHubOptions<EmailVerificationHub>(options => {
+		options.ClientTimeoutInterval = TimeSpan.FromSeconds(30);
+	}
+);
+
+builder.Services.AddSingleton<IUserIdProvider, EmailAsUserIdProvider>();
 
 var app = builder.Build();
 
@@ -147,6 +159,20 @@ if (app.Environment.IsDevelopment())
 	});
 }
 
+app.UseWebSockets();
+app.Use(async (context, next) =>
+{
+	if (context.Request.Path == "/ws" && context.WebSockets.IsWebSocketRequest)
+	{
+		var webSocketService = context.RequestServices.GetRequiredService<IWebSocketService>();
+		await webSocketService.HandleWebSocket(context);
+	}
+	else
+	{
+		await next();
+	}
+});
+
 // CORS
 app.UseCors("AllowSpecificOrigins");
 //Middleware Authentication & Authorization
@@ -157,5 +183,8 @@ app.MapControllerRoute(
 	name: "default",
 	pattern: "{controller=Home}/{action=Index}/{id?}"
 );
+
+app.UseRouting();
+app.MapHub<EmailVerificationHub>("/emailVerificationHub");
 
 app.Run();
