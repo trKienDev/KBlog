@@ -59,14 +59,7 @@ namespace KBlog.Controllers
 			//    redirect -> Mở "http://localhost:5173/email-verified?email=..." (tab B)
 			//    hoặc hiển thị HTML
 			// Ví dụ ta trả về 1 trang HTML đơn giản
-			return Content(@"
-				<html>
-					<body>
-						<h2>✅ Email verified successfully!</h2>
-						<p>You can close this tab now and return to your application.</p>
-					</body>
-				</html>", 
-			"text/html");
+			return Redirect("http://localhost:5173/email-verified");
 		}
 
 		public class EmailRequest
