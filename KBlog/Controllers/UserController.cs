@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using KBlog.Services.Interfaces;
 using KBlog.Services;
+using System.Runtime.InteropServices;
 
 namespace KBlog.Controllers
 {
@@ -42,9 +43,11 @@ namespace KBlog.Controllers
 					return BadRequest("User registration failed.");
 				}
 
-				var verifyLink = $"{Request.Scheme}://{Request.Host}/api/email/verify?token={user.EmailVerificationToken}&email={user.Email}";
-				string templatePath = Path.Combine(Directory.GetCurrentDirectory(), "Resources", "Templates", "VerifyEmailTemplate.html");
-				string emailBody = System.IO.File.ReadAllText(templatePath).Replace("{verifyLink}", verifyLink);
+				if (string.IsNullOrEmpty(user.EmailVerificationToken))
+				{
+					return BadRequest("Email verification token is missing.");
+				}
+				var emailBody = await _emailService.BuildVerificationEmailAsync(user.Email, user.EmailVerificationToken);
 				await _emailService.SendEmailAsync(user.Email, "Xác thực tài khoản KBlog", emailBody);
 
 				return Ok(new { message = "Register Successfully. Please check your email to verify your account.", success = true });

@@ -47,8 +47,8 @@ namespace KBlog.Services.Implementations
 				Email = model.Email,
 				Password_hash = BCrypt.Net.BCrypt.HashPassword(model.Password),
 				ProfileImageUrl = profileImagePath,
-				EmailVerificationToken = Guid.NewGuid().ToString(), // ✅ Đảm bảo giá trị không NULL
-				IsEmailVerified = false // ✅ Đảm bảo giá trị không NULL
+				EmailVerificationToken = Guid.NewGuid().ToString(), 
+				IsEmailVerified = false 
 			};
 
 			await _userRepository.AddUserAsync(user);

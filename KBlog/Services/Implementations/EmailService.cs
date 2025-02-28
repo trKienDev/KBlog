@@ -8,15 +8,18 @@ using System.Net.Mail;
 using System.Net;
 using Microsoft.EntityFrameworkCore;
 using KBlog.Data;
+using KBlog.Models;
 
 namespace KBlog.Services.Implementations
 {
 	public class EmailService : IEmailService
 	{
+		private readonly IHttpContextAccessor _httpContextAccessor;
 		private readonly IConfiguration _configuration;
 		private readonly KBlogDbContext _dbContext;
-		public EmailService(IConfiguration configuration, KBlogDbContext dbContext)
+		public EmailService(IConfiguration configuration, KBlogDbContext dbContext, IHttpContextAccessor httpContextAccessor)
 		{
+			_httpContextAccessor = httpContextAccessor;
 			_configuration = configuration;
 			_dbContext = dbContext;
 		}
@@ -79,6 +82,18 @@ namespace KBlog.Services.Implementations
 			return true;
 		}
 
+		public async Task<string> BuildVerificationEmailAsync(string email, string token) {
+			var httpContext = _httpContextAccessor.HttpContext;
+			if (httpContext == null)
+			{
+				throw new InvalidOperationException("HttpContext is not available");
+			}
+			var request = httpContext.Request;
+			var verifyLink = $"{request.Scheme}://{request.Host}/api/email/verify?token={token}&email={email}";
+			string templatePath = Path.Combine(Directory.GetCurrentDirectory(), "Resources", "Templates", "VerifyEmailTemplate.html");
+			string template = await File.ReadAllTextAsync(templatePath);
 
+			return template.Replace("{verifyLink}", verifyLink);
+		}
 	}
 }

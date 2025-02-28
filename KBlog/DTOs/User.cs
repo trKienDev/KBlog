@@ -10,7 +10,7 @@ namespace KBlog.DTOs
 		public string Password_hash { get; set; } = string.Empty;
 		public string Role { get; set; } = string.Empty ;
 		public string? ProfileImageUrl { get; set; }
-		public string? EmailVertificationToken { get; set; }
+		public string EmailVertificationToken { get; set; } = string.Empty;
 		public bool IsEmailVerified { get; set; }	
 	}
 

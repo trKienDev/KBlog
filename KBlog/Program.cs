@@ -96,6 +96,8 @@ builder.Services.AddSwaggerGen(c =>
 	});
 });
 
+builder.Services.AddHttpContextAccessor();
+
 // DbContext
 builder.Services.AddDbContext<KBlogDbContext>(
 		options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
