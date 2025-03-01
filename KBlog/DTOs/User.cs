@@ -12,6 +12,8 @@ namespace KBlog.DTOs
 		public string? ProfileImageUrl { get; set; }
 		public string EmailVertificationToken { get; set; } = string.Empty;
 		public bool IsEmailVerified { get; set; }	
+		public string? RefreshToken { get; set; }
+		public DateTime? RefreshTokenExpiryTime { get; set; }
 	}
 
 	public class RegisterRequest
@@ -34,11 +36,11 @@ namespace KBlog.DTOs
 	public class LoginRequest
 	{
 		[Required, EmailAddress]
-		public string? Email { get; set; }
+		public string Email { get; set; } = string.Empty;
 
 		[Required]
 		[MinLength(6, ErrorMessage = "Password must be at least 6 characters.")]
-		public string? Password { get; set; }
+		public string Password { get; set; } = string.Empty;
 	}
 
 	public class UpdateUser

@@ -14,6 +14,7 @@ namespace KBlog.Data
 		public DbSet<User> Users { get; set; }
 		public DbSet<Post> Posts { get; set; }
 		public DbSet<Comment> Comments { get; set; }	
+		public DbSet<RefreshToken> RefreshTokens { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
@@ -33,6 +34,11 @@ namespace KBlog.Data
 										.WithMany(c => c.Replies)
 										.HasForeignKey(c => c.ParentId)
 										.OnDelete(DeleteBehavior.NoAction); // Ko tự động xoá comment cha							
+			
+			modelBuilder.Entity<RefreshToken>().HasOne(rt => rt.User)
+											.WithMany(u => u.RefreshTokens)
+											.HasForeignKey(rt => rt.UserId)
+											.OnDelete(DeleteBehavior.Cascade);
 		}
 	}
 }

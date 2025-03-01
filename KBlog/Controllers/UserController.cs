@@ -13,6 +13,8 @@ using System.Security.Claims;
 using KBlog.Services.Interfaces;
 using KBlog.Services;
 using System.Runtime.InteropServices;
+using KBlog.Data.Repository.Implementations;
+using Azure.Core;
 
 namespace KBlog.Controllers
 {
@@ -24,12 +26,14 @@ namespace KBlog.Controllers
 		private readonly IAuthService _authService;
 		private readonly IUserService _userService;
 		private readonly IEmailService _emailService;
+		private readonly ILogger<UserController> _logger;
 
-		public UserController(KBlogDbContext context, IAuthService authService, IUserService userService, IEmailService emailService) {
+		public UserController(	KBlogDbContext context, IAuthService authService, IUserService userService, IEmailService emailService, ILogger<UserController> logger) {
 			_dbContext = context;
 			_authService = authService;
 			_userService = userService;
 			_emailService = emailService;
+			_logger = logger;
 		}
 
 		[HttpPost("register")]
@@ -37,9 +41,12 @@ namespace KBlog.Controllers
 		{
 			try
 			{
+				_logger.LogInformation("Starting user registration process for email: {Email}", model.Email);
+
 				var user = await _userService.RegisterUserAsync(model);
 				if (user == null)
 				{
+					_logger.LogWarning("User registration failed for email: {Email}", model.Email);
 					return BadRequest("User registration failed.");
 				}
 
@@ -54,26 +61,43 @@ namespace KBlog.Controllers
 			}
 			catch (Exception ex)
 			{
+				_logger.LogError(ex, "An error occured during the registration process for email: {Email}", model.Email);
 				return BadRequest(new { error = ex.Message });
 			}
 		}
 
 		[HttpPost("login")]
-		public async Task<IActionResult> Login([FromBody] LoginRequest model) {
-			if (model.Email == null) {
-				return BadRequest("Please provide email!");
-			} else if (model.Password == null) {
-				return BadRequest("Please provide password");
-			}
-
+		public async Task<IActionResult> Login([FromBody] LoginRequest model)
+		{
 			var user = await _userService.GetUserByEmailAsync(model.Email);
 			if (user == null || !BCrypt.Net.BCrypt.Verify(model.Password, user.Password_hash))
 			{
 				return Unauthorized("Invalid email or password");
 			}
 
-			var token = _authService.GenerateJwtToken(new User { Id = user.Id, Email = user.Email, Name = user.Name }, user.Email, user.Name);
-			return Ok(new { token });
+			var accessToken = _authService.GenerateJwtToken(user);
+
+			var refreshTokenStr = _authService.GenerateRefreshToken();
+			var refreshTokenEntity = new RefreshToken
+			{
+				Token = refreshTokenStr,
+				ExpiryTime = DateTime.UtcNow.AddDays(7),
+				UserId = user.Id,
+			};
+
+			_dbContext.RefreshTokens.Add(refreshTokenEntity);
+			await _dbContext.SaveChangesAsync();
+
+			Response.Cookies.Append("refreshToken", refreshTokenStr, new CookieOptions
+			{
+				HttpOnly = true,
+				Secure = true,
+				SameSite = SameSiteMode.Strict,
+				Expires = DateTime.UtcNow.AddDays(7)
+			});
+
+			return Ok(new { accessToken });
+
 		}
 
 		[Authorize]
@@ -163,6 +187,48 @@ namespace KBlog.Controllers
 
 			await _userService.DeleteUserAsync(id);
 			return NoContent();
+		}
+
+		[HttpPost("refresh-token")]
+		public async Task<IActionResult> RefreshToken()
+		{
+			var refreshToken = Request.Cookies["refreshToken"];
+			if (refreshToken == null)
+			{
+				return Unauthorized("No refresh token");
+			}
+
+			var refreshRecord = await _dbContext.RefreshTokens.Include(r => r.User)
+											.FirstOrDefaultAsync(r => r.Token == refreshToken);
+			if (refreshRecord == null || refreshRecord.ExpiryTime < DateTime.UtcNow)
+			{
+				return Unauthorized("Invalid or expired refresh token");
+			}
+
+			var user = refreshRecord.User;
+			var newAccessToken = _authService.GenerateJwtToken(user);
+
+			var newRefreshTokenStr = _authService.GenerateRefreshToken();
+			var newRefreshTokenEntity = new RefreshToken
+			{
+				Token = newRefreshTokenStr,
+				ExpiryTime = DateTime.UtcNow.AddDays(7),
+				UserId = user.Id,
+			};
+
+			_dbContext.RefreshTokens.Add(newRefreshTokenEntity);
+			_dbContext.RefreshTokens.Remove(refreshRecord);
+			await _dbContext.SaveChangesAsync();
+
+			Response.Cookies.Append("refreshToken", newRefreshTokenStr, new CookieOptions
+			{
+				HttpOnly = true,
+				Secure = true,
+				SameSite = SameSiteMode.Strict,
+				Expires = DateTime.UtcNow.AddDays(7)
+			});
+
+			return Ok(new { AccessToken = newAccessToken });
 		}
 	}
 }

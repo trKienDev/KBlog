@@ -4,15 +4,19 @@ using KBlog.DTOs;
 using KBlog.Models;
 using Microsoft.VisualBasic;
 using KBlog.Data.Repository.Interfaces;
+using KBlog.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace KBlog.Services.Implementations
 {
 	public class UserService : IUserService
 	{
 		private readonly IUserRepository _userRepository;
-		public UserService(IUserRepository userRepository)
+		private readonly KBlogDbContext _dbContext;
+		public UserService(IUserRepository userRepository, KBlogDbContext dbContext)
 		{
 			_userRepository = userRepository;
+			_dbContext = dbContext;
 		}
 
 		public async Task<User> RegisterUserAsync(RegisterRequest model)
@@ -57,11 +61,11 @@ namespace KBlog.Services.Implementations
 			return user;
 		}
 
-		public async Task<UserDTO?> GetUserByEmailAsync(string email)
+		public async Task<User?> GetUserByEmailAsync(string email)
 		{
 			var user = await _userRepository.GetUserByEmailAsync(email);
 			if (user == null) { return null; }
-			return new UserDTO
+			return new User
 			{
 				Id = user.Id,
 				Name = user.Name,
@@ -119,5 +123,9 @@ namespace KBlog.Services.Implementations
 			await _userRepository.DeleteUserAsync(id);
 			await _userRepository.SaveChangesAsync();
 		}
+
+		//public async Task<UserDTO?> GetUserByRefreshTokenAsync (string refreshToken) {
+		//	return await _dbContext.Users.FirstOrDefaultAsync(u => u.Re)
+		//} 
 	}
 }

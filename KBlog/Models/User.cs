@@ -40,5 +40,7 @@ namespace KBlog.Models
 
 		[Required]
 		public bool IsEmailVerified { get; set; } = false; // mặc định chưa xác minh
+
+		public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
 	}
 }

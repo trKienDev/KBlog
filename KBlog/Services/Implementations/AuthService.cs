@@ -4,6 +4,8 @@ using System.Text;
 using System.Security.Claims;
 using KBlog.Models;
 using KBlog.Services.Interfaces;
+using KBlog.DTOs;
+using System.Security.Cryptography;
 
 namespace KBlog.Services.Implementations
 {
@@ -15,7 +17,7 @@ namespace KBlog.Services.Implementations
 			_config = config;
 		}
 
-		public string GenerateJwtToken(User user, string email, string name)
+		public string GenerateJwtToken(User user)
 		{
 			var tokenHandler = new JwtSecurityTokenHandler();
 			string? secretKey = _config["Jwt:Secret"];
@@ -35,7 +37,7 @@ namespace KBlog.Services.Implementations
 			var tokenDescriptor = new SecurityTokenDescriptor
 			{
 				Subject = new ClaimsIdentity(claims),
-				Expires = DateTime.UtcNow.AddHours(2),
+				Expires = DateTime.UtcNow.AddMinutes(15),
 				SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
 			};
 
@@ -43,6 +45,12 @@ namespace KBlog.Services.Implementations
 			return tokenHandler.WriteToken(token);
 		}
 
+		public string GenerateRefreshToken() {
+			var randomNumber = new byte[32];
+			using var rng = RandomNumberGenerator.Create();
+			rng.GetBytes(randomNumber);
+			return Convert.ToBase64String(randomNumber);
+		}
 		public int GetUserIdFromClaims(ClaimsPrincipal user) {
 			return int.Parse(user.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
 		}
