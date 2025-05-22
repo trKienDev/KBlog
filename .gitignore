@@ -1,0 +1,124 @@
+﻿# --- Visual Studio / Rider / IDE specific files ---
+## Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.csproj.user
+*.config.user # User-specific config transforms
+
+## ReSharper
+_ReSharper*/
+*.[Rr]eSharper
+*.DotSettings.user
+
+## Rider
+.idea/
+*.sln.ide
+
+## User's additional IDE/VS files (from original)
+*.cache # Generic cache files, often IDE related
+*.ncb   # Old C++ intellisense, harmless
+*.opendb # SQL CE or similar
+*.VC.db  # SQL C++ Browse DB, harmless
+
+# --- Build Artifacts ---
+## .NET build output folders (case-insensitive, any depth)
+[Oo]bj/
+[Bb]in/
+
+## Explicitly ignore common build output file types
+## (Often redundant if bin/obj are ignored, but can catch loose files)
+*.dll
+*.exe
+*.pdb
+*.sastask # Fakes assemblies
+*.gcno # GCC coverage
+*.gcda # GCC coverage
+*.gcov # GCC coverage
+*.dll.config
+*.exe.config
+
+# --- NuGet Packages ---
+## NuGet packages folder (older .NET Framework style, good to keep for compatibility)
+packages/
+## Exclude C# project packages directory
+*.nuget.props
+*.nuget.targets
+## Don't ignore packages.config (used by older .NET Framework projects)
+!**/packages.config
+## NuGet Package Lock Files (project.assets.json is in obj/ and already ignored)
+## Some teams commit packages.lock.json for deterministic restores.
+## If you want to ignore it, add: packages.lock.json
+
+# --- .NET Tools ---
+.store/
+.tools/
+
+# --- Environment & Configuration Files (Local/Development only) ---
+appsettings.Development.json
+appsettings.Local.json
+secrets.json
+*.secrets.json # Common pattern for user secrets in development
+# Add any other local environment config files here, e.g., appsettings.KienDev.json
+
+# --- Local Database Files ---
+# SQL Server
+*.mdf
+*.ldf # Corrected from .ldb (SQL Server Transaction Log)
+# SQLite
+*.sqlite
+*.sqlite3
+*.db
+*.db3
+# SQL Server Compact
+*.sdf
+
+# --- Log Files ---
+# Generic .log files - CAUTION: This is broad and might ignore application logs you want to keep.
+# Consider making this more specific if your application generates important .log files.
+# For example, ignore a specific 'Logs/' directory instead: Logs/
+# Or specific VS log patterns: *.vslog, VisualStudio*.log
+*.log
+# Entity Framework Migrations backup
+MigrationBackup/
+
+# --- Test Results & Coverage Reports ---
+TestResults/
+*.trx
+*.coverlet.json
+*.coverage
+*.coveragexml
+*.opencover.xml
+*.codecov.json
+
+# --- OS Generated Files ---
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+# Spotlight
+.Spotlight-*/
+# Trash
+.Trashes
+# Quarantine
+.quarantine
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.nfs*
+
+# --- Backup Files (from user's list) ---
+*.bak
+
+# --- Other ---
+# If you use specific tools that generate temporary files not covered, add them here.

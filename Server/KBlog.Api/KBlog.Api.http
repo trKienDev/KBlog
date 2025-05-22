@@ -1,0 +1,6 @@
+@KBlog.Api_HostAddress = http://localhost:5222
+
+GET {{KBlog.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
