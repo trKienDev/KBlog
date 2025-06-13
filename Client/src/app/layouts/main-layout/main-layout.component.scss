@@ -1,0 +1,19 @@
+.main-container {
+      display: grid;
+      // định nghĩa 3 cột: cột trái 240px, cột giữa tự co giãn, cột phải 300px
+      grid-template-columns: 240px 1fr 300px;
+      // khoảng cách giữa các cột
+      gap: 1.5 rem;
+      // căn giữa layout & đặt chiều rộng tối đa
+      max-width: 1280px;
+      margin: 1.5rem auto;
+      padding: 0 1rem;
+}
+
+// css đơn giản để dễ nhận biết các khu vực
+.left-sidebar, .main-container, .right-sidebar {
+      padding: 1rem;
+      background-color: #f9f9f9;
+      border-radius: 8px;
+      min-height: 80vh; // chiều cao tối thiểu để layout không bị vỡ
+}
