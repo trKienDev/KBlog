@@ -1,0 +1,51 @@
+name: CI Build and Test
+
+on: 
+  push:
+    branches: 
+      - main # Kích hoạt pipeline khi có commit mới vào nhánh main
+      - features/* # Hoặc bất kỳ nhánh feature nào bạn muốn chạy CI
+
+  pull_request: 
+    branches:
+      - main # Kích hoạt pipeline khhi có Pull Request mở đến nhánh main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest # Chạy trên 1 máy ảo Ubuntu mới nhất của GitHub
+
+    steps:
+    # Bước 1: Checkout mã nguồn
+    - name: Checkout code
+      uses: actions/checkout@v4 # Action để lấy mã nguồn từ repository
+
+    # Bước 2: Thiết lập môi trường Node.js cho (Angular)
+    - name: Setup Node.js environment
+      uses: actions/setup-node@v4
+      with: 
+        node-version: '20' # Đảm bảo Node.js version phù hợp với dự án Angular
+
+    # Bước 3: Cài đặt dependencies cho Client (Angular) và Build
+    - name: Install Client Dependencies
+      run: npm install
+      working-directory: ./Client
+
+    # Bước 4: Thiết lập môi trường .NET cho Server
+    - name: Setup .NET environment
+      uses: actions/setup-dotnet@v4
+      with: 
+        dotnet-version: '8.0.x'
+
+    # Bước 5: Cài đặt dependencies, Build & Chạy Unit Test cho Server (.NET Core)
+    - name: Restore .NET tools and dependencies
+      run: dotnet restore
+      working-directory: ./Server
+
+    - name: Run Server Unit Tests
+      run: dotnet test --no-build --verbosity normal
+      working-directory: ./Server
+
+    # Bước 6 (tùy chọn): Chạy Unit Test cho Client (Angular)
+    - name: Run Client Unit Tests
+      run: npm test -- --no-watch --browser=ChromeHeadlessCI # Chạy unit test Angular trong môi trường headless
+      working-directory: ./Client
