@@ -47,5 +47,5 @@ jobs:
 
     # Bước 6 (tùy chọn): Chạy Unit Test cho Client (Angular)
     - name: Run Client Unit Tests
-      run: npm test -- --no-watch --browser=ChromeHeadlessCI # Chạy unit test Angular trong môi trường headless
+      run: npm test -- --no-watch --browsers=ChromeHeadlessCI # Chạy unit test Angular trong môi trường headless
       working-directory: ./Client
