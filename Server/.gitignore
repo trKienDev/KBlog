@@ -122,3 +122,5 @@ $RECYCLE.BIN/
 
 # --- Other ---
 # If you use specific tools that generate temporary files not covered, add them here.
+*.DS_Store
+Thumbs.db
