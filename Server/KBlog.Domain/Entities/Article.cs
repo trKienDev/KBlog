@@ -7,8 +7,8 @@ namespace KBlog.Domain.Entities {
 		public string Title { get; set; } = string.Empty;
 		public string Slug { get; set; } = string.Empty;
 		public string Content { get; set; } = string.Empty;
-		public string Excerpt { get; set; } = string.Empty; // Đoạn tóm tắt ngắn
-		public string? CoverImageUrl { get; set; } // URL ảnh bìa, nullable
+		public string? Excerpt { get; set; } = string.Empty;
+		public string? CoverImageUrl { get; set; } = string.Empty;
 		public DateTime CreatedAt { get; set; }
 		public DateTime? UpdatedAt { get; set; }
 		public DateTime? PublishedAt { get; set; }
@@ -19,10 +19,10 @@ namespace KBlog.Domain.Entities {
 
 		// Navigation property
 		public User? Author { get; set; }
-		public ICollection<ArticleCategory>? ArticleCategories { get; set; }
-		public ICollection<ArticleTag>? ArticleTags { get; set; }
-		public ICollection<Comment>? Comments { get; set; }
-		public ICollection<FavoriteArticle>? FavoriteArticles { get; set; }
+		public ICollection<ArticleCategory> ArticleCategories { get; set; } = new List<ArticleCategory>();
+		public ICollection<ArticleTag> ArticleTags { get; set; } = new List<ArticleTag>();
+		public ICollection<Comment> Comments { get; set; } = new List<Comment>();
+		public ICollection<FavoriteArticle> FavoriteArticles { get; set; } = new List<FavoriteArticle>();
 	}
 
 	public enum PostStatus

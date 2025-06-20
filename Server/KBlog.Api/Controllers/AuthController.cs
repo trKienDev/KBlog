@@ -80,7 +80,7 @@ namespace KBlog.Api.Controllers
 			{
 				UserId = user.Id,
 				LoginTime = DateTime.UtcNow,
-				IpAdress = HttpContext.Connection.RemoteIpAddress?.ToString(),
+				IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString(),
 			};
 			_context.LoginHistories.Add(loginHistory);
 			await _context.SaveChangesAsync();	
@@ -101,7 +101,7 @@ namespace KBlog.Api.Controllers
 				// Giúp chúng ta dễ dàng phát hiện lỗi cấu hình
 				throw new InvalidOperationException("JWT Key is not configured in appsettings.json under JwtSettings:Key");
 			}
-			var key = Encoding.ASCII.GetBytes(secretKey);
+			var key = Encoding.UTF8.GetBytes(secretKey);
 
 			var claims = new List<Claim>
 			{

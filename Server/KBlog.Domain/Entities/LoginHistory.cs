@@ -10,7 +10,7 @@ namespace KBlog.Domain.Entities
 	{
 		public long Id { get; set; } // Lưu được nhiều phiên lịch sử
 		public DateTime LoginTime { get; set; }
-		public string? IpAdress	 {  get; set; }
+		public string? IpAddress	 {  get; set; }
 		
 		// Foreign key đến Users
 		public string UserId { get; set; } = string.Empty;
