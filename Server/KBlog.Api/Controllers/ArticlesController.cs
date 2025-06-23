@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Slugify;
 using System.IdentityModel.Tokens.Jwt;
+using System.Runtime.InteropServices;
 using System.Security.Claims;
 
 namespace KBlog.Api.Controllers
@@ -22,29 +23,21 @@ namespace KBlog.Api.Controllers
 			_tagRepository = tagRepository;
 		}
 
-		[HttpGet]
+		[HttpGet("all")]
 		public async Task<ActionResult<IReadOnlyList<ArticleDto>>> GetAllArticles() {
 			var articles = await _articleRepository.GetAllAsync();
+			var article_dtos = MappingArticlesDto(articles);
+			return Ok(article_dtos);
+		}
 
-			// convert List<Article> tô List<ArticleDto> to return to client
-			var articleDtos = articles.Select(article => new ArticleDto
-			{
-				Id = article.Id,
-				Title = article.Title,
-				Slug = article.Slug,
-				Excerpt = article.Excerpt,
-				CoverImageUrl = article.CoverImageUrl,
-				CreatedAt = article.CreatedAt,
-				AuthorName = article.Author?.UserName ?? "N/A",
-				Categories = article.ArticleCategories.Select(ac => ac.Category?.Name)
-					.Where(name => name != null)
-					.Select(name => name!).ToList(),
-				Tags = article.ArticleTags.Select(at => at.Tag?.Name)
-					.Where(name => name != null)
-					.Select(name => name!).ToList(),
-			}).ToList();
-
-			return Ok(articleDtos);
+		[HttpGet]
+		public async Task<ActionResult<IReadOnlyList<ArticleDto>>> GetPagedArticles(
+			[FromQuery] int page_number = 1, 
+			[FromQuery] int page_size = 10
+		) {
+			var articles = await _articleRepository.GetPagedAsync(page_number, page_size);
+			var aticles_dtos = MappingArticlesDto(articles);
+			return Ok(aticles_dtos);
 		}
 
 		[HttpGet("{slug}")]
@@ -151,6 +144,100 @@ namespace KBlog.Api.Controllers
 			};
 
 			return CreatedAtAction(nameof(GetArticleBySlug), new { slug = createdArticle.Slug }, articleToReturn);
+		}
+
+		[HttpPut("{id}")]
+		[Authorize(Roles = "Admin")]
+		public async Task<IActionResult> UpdateArticle(int id, [FromBody] CreateArticleDto updateArticleDto) {
+			var articleToUpdate = await _articleRepository.GetByIdAsync(id);	
+			if(articleToUpdate == null) {
+				return NotFound("Article not found");
+			}
+
+			articleToUpdate.Title = updateArticleDto.Title;
+			articleToUpdate.Content = updateArticleDto.Content;
+			articleToUpdate.Excerpt = updateArticleDto.Excerpt;
+			articleToUpdate.CoverImageUrl = updateArticleDto.CoverImageUrl;
+			articleToUpdate.UpdatedAt = DateTime.UtcNow;
+
+			// Xử lý logic cập nhật slug một cách an toàn nếu title thay đổi.
+			var slug_helper = new SlugHelper();
+			var new_slug = slug_helper.GenerateSlug(updateArticleDto.Title);
+			if (articleToUpdate.Slug != new_slug)
+			{
+				if (await _articleRepository.IsSlugExistAsync(new_slug, id))
+				{
+					return Conflict("The Article title has been existed");
+				}
+				articleToUpdate.Slug = new_slug;
+			}
+
+			// TODO: Xử lý logic cập nhật Categories và Tags.
+			// 1. Xóa tất cả liên kết Category cũ
+			articleToUpdate.ArticleCategories.Clear();
+			// 2. Thêm lại các liên kết Category mới từ DTO
+			if(updateArticleDto.CategoryIds != null) {
+				foreach (var categoryId in updateArticleDto.CategoryIds)
+				{
+					articleToUpdate.ArticleCategories.Add(new ArticleCategory { CategoryId = categoryId });
+				}				
+			}
+			// 3. Xóa tất cả liên kết Tag cũ
+			articleToUpdate.ArticleTags.Clear();
+			// 4. Thêm lại các liên kết Tag mới từ DTO (bao gồm logic tìm hoặc tạo mới)
+			if (updateArticleDto.Tags != null)
+			{
+				foreach (var tagName in updateArticleDto.Tags)
+				{
+					var normalizedTagName = tagName.Trim();
+					var existingTag = await _tagRepository.FindByNameAsync(normalizedTagName);
+					if (existingTag != null)
+					{
+						articleToUpdate.ArticleTags.Add(new ArticleTag { TagId = existingTag.Id });
+					}
+					else
+					{
+						var newTag = new Tag { Name = normalizedTagName, Slug = normalizedTagName.ToLower() };
+						articleToUpdate.ArticleTags.Add(new ArticleTag { Tag = newTag });
+					}
+				}
+			}
+			 
+			await _articleRepository.UpdateAsync(articleToUpdate);
+			return NoContent();
+		}
+
+		[HttpDelete("{id}")]
+		[Authorize(Roles = "Admin")]
+		public async Task<IActionResult> DeleteArticle(int id) {
+			var articleToDelete = await _articleRepository.GetByIdAsync(id);
+			if (articleToDelete == null)
+			{
+				return NotFound();
+			}
+
+			await _articleRepository.DeleteAsync(articleToDelete);
+			return NoContent();
+		}
+
+		private List<ArticleDto> MappingArticlesDto(IEnumerable<Article> articles)
+		{
+			return articles.Select(article => new ArticleDto
+			{
+				Id = article.Id,
+				Title = article.Title,
+				Slug = article.Slug,
+				Excerpt = article.Excerpt,
+				CoverImageUrl = article.CoverImageUrl,
+				CreatedAt = article.CreatedAt,
+				AuthorName = article.Author?.UserName ?? "N/A",
+				Categories = article.ArticleCategories.Select(ac => ac.Category?.Name)
+					.Where(name => name != null)
+					.Select(name => name!).ToList(),
+				Tags = article.ArticleTags.Select(at => at.Tag?.Name)
+					.Where(name => name != null)
+					.Select(name => name!).ToList()
+			}).ToList();
 		}
 	}
 }

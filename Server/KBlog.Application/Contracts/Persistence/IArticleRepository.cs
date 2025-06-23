@@ -12,9 +12,10 @@ namespace KBlog.Application.Contracts.Persistence
 		Task<Article?> GetByIdAsync(int id);
 		Task<Article?> GetBySlugAsync(string slug);
 		Task<IReadOnlyList<Article>> GetAllAsync();
+		Task<IReadOnlyList<Article>> GetPagedAsync(int page_number, int page_size);
 		Task<Article> AddAsync(Article entity);
 		Task UpdateAsync(Article entity);
 		Task DeleteAsync(Article entity);
-		Task<bool> IsSlugExistAsync(string slug);	
+		Task<bool> IsSlugExistAsync(string slug, int? articleIdToExclude = null);	
 	}
 }

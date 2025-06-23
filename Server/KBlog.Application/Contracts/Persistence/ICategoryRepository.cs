@@ -11,8 +11,8 @@ namespace KBlog.Application.Contracts.Persistence
 	{
 		Task<Category?> GetByIdAsync(int id);
 		Task<IReadOnlyList<Category>> GetAllAsync();
-		Task<Category> AddAsync(Category entity);
-		Task UpdateAsync(Category entity);
-		Task DeleteAsync(Category entity);
+		Task<Category> AddAsync(Category category);
+		Task UpdateAsync(Category category);
+		Task DeleteAsync(Category category);
 	}
 }

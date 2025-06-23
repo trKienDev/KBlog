@@ -30,6 +30,10 @@ namespace KBlog.Infrastructure.Repositories
 			await _context.SaveChangesAsync();
 			return tag;
 		}
+		public async Task UpdateAsync(Tag tag) {
+			_context.Entry(tag).State = EntityState.Modified;
+			await _context.SaveChangesAsync();
+		}
 		public async Task DeleteAsync(Tag tag) {
 			_context.Tags.Remove(tag);
 			await _context.SaveChangesAsync();

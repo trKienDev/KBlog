@@ -1,4 +1,6 @@
-﻿using KBlog.Application.Contracts.Persistence;
+﻿using KBlog.Application.Contracts.Identity;
+using KBlog.Application.Contracts.Persistence;
+using KBlog.Application.Services;
 using KBlog.Domain.Entities;
 using KBlog.Infrastructure.Persistence;
 using KBlog.Infrastructure.Repositories;
@@ -65,10 +67,18 @@ builder.Services.AddAuthentication(options =>
 });
 
 
-// 5. Thêm các Repository
+// 5. Thêm các Repositories
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IArticleRepository, ArticleRepository>();
 builder.Services.AddScoped<ITagRepository, TagRepository>();
+builder.Services.AddScoped<ILoginHistoryRepository, LoginHistoryRepository>();
+
+// 6. Thêm các Services
+builder.Services.AddScoped<IAuthService, AuthService>();	
+
+// Cấu hình routing api
+builder.Services.AddRouting(options => options.LowercaseUrls = true);
+
 // 6. Thêm Controller và Swagger
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -85,19 +95,19 @@ builder.Services.AddSwaggerGen(options =>
 		Scheme = "Bearer"
 	});
 	options.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
 	{
-	    new OpenApiSecurityScheme
-	    {
-		Reference = new OpenApiReference
 		{
-		    Type = ReferenceType.SecurityScheme,
-		    Id = "Bearer"
+			new OpenApiSecurityScheme
+			{
+				Reference = new OpenApiReference
+				{
+					Type = ReferenceType.SecurityScheme,
+					Id = "Bearer"
+				}
+			},
+			[]
 		}
-	    },
-	    new string[]{}
-	}
-    });
+	});
 });
 
 
@@ -115,7 +125,7 @@ using (var scope = app.Services.CreateScope())
 	{
 		var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 		var userManager = services.GetRequiredService<UserManager<User>>();
-		string[] roleNames = { "Admin", "Reader" };
+		string[] roleNames = [ "Admin", "Reader" ];
 		foreach (var roleName in roleNames)
 		{
 			if (!await roleManager.RoleExistsAsync(roleName))
@@ -128,7 +138,7 @@ using (var scope = app.Services.CreateScope())
 		if (adminUser == null)
 		{
 			var newAdminUser = new User { UserName = "admin", Email = adminEmail, EmailConfirmed = true, RegisteredAt = DateTime.UtcNow };
-			var result = await userManager.CreateAsync(newAdminUser, "c");
+			var result = await userManager.CreateAsync(newAdminUser, "Admin123!");
 			if (result.Succeeded)
 			{
 				await userManager.AddToRoleAsync(newAdminUser, "Admin");

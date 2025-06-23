@@ -13,6 +13,7 @@ namespace KBlog.Application.Contracts.Persistence
 		Task<IReadOnlyList<Tag>> GetAllAsync();
 		Task<Tag?> FindByNameAsync(string name);
 		Task<Tag> AddAsync(Tag tag);
+		Task UpdateAsync(Tag tag);
 		Task DeleteAsync(Tag tag);
 	}
 }

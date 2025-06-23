@@ -18,13 +18,13 @@ namespace KBlog.Infrastructure.Repositories
 			_context = context;
 		}
 
-		public async Task<Category> AddAsync(Category entity) {
-			await _context.Categories.AddAsync(entity);
+		public async Task<Category> AddAsync(Category category) {
+			await _context.Categories.AddAsync(category);
 			await _context.SaveChangesAsync();
-			return entity;
+			return category;
 		}
-		public async Task DeleteAsync(Category entity) {
-			_context.Categories.Remove(entity);	
+		public async Task DeleteAsync(Category category) {
+			_context.Categories.Remove(category);	
 			await _context.SaveChangesAsync();	
 		}
 		public async Task<IReadOnlyList<Category>> GetAllAsync() {
@@ -33,9 +33,9 @@ namespace KBlog.Infrastructure.Repositories
 		public async Task<Category?> GetByIdAsync(int id) {
 			return await _context.Categories.FindAsync(id);
 		}
-		public async Task UpdateAsync(Category entity) {
+		public async Task UpdateAsync(Category category) {
 			// Đánh dấu đối tượng là đã bị thay đổi
-			_context.Entry(entity).State = EntityState.Modified;
+			_context.Entry(category).State = EntityState.Modified;
 			await _context.SaveChangesAsync();
 		}
 	}

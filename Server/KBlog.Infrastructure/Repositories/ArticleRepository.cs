@@ -28,12 +28,13 @@ namespace KBlog.Infrastructure.Repositories
 			await _context.SaveChangesAsync();
 		}
 		public async Task<IReadOnlyList<Article>> GetAllAsync() {
-			return await _context.Articles
-				.Include(a => a.Author)
-				.Include(a => a.ArticleCategories).ThenInclude(ac => ac.Category)
-				.Include(a => a.ArticleTags).ThenInclude(at => at.Tag)
-				.OrderByDescending(a => a.CreatedAt)
-				.ToListAsync();
+			var base_query = GetBaseArticleQuery();
+			return await base_query.ToListAsync();
+		}
+		public async Task<IReadOnlyList<Article>> GetPagedAsync(int page_number, int page_size) {
+			var base_query = GetBaseArticleQuery();
+			return await base_query.Skip((page_number - 1) * page_size)
+				.Take(page_size).ToListAsync();
 		}
 		public async Task<Article?> GetByIdAsync(int id) {
 			return await _context.Articles
@@ -57,8 +58,22 @@ namespace KBlog.Infrastructure.Repositories
 			_context.Entry(entity).State = EntityState.Modified;
 			await _context.SaveChangesAsync();
 		}
-		public async Task<bool> IsSlugExistAsync(string slug) {
-			return await _context.Articles.AnyAsync(a => a.Slug == slug);
+		public async Task<bool> IsSlugExistAsync(string slug, int? articleIdToExclude = null) {
+
+			var query = _context.Articles.Where(a => a.Slug == slug);
+			
+			// Nếu có ID cần loại trừ --> thêm điều kiện vào câu truy vấn
+			if(articleIdToExclude.HasValue) {
+				query = query.Where(a => a.Id != articleIdToExclude.Value);	
+			}
+			return await query.AnyAsync();
+		}
+		private IQueryable<Article> GetBaseArticleQuery() {
+			// AsNoTracking() --> giúp tăng hiệu năng cho các truy vấn chỉ đọc
+			return _context.Articles.Include(a => a.Author)
+				.Include(a => a.ArticleCategories).ThenInclude(ac => ac.Category)
+				.Include(a => a.ArticleTags).ThenInclude(at => at.Tag)
+				.OrderByDescending(a => a.CreatedAt);
 		}
 	}
 }

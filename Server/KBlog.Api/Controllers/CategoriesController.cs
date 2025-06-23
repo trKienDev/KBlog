@@ -24,6 +24,18 @@ namespace KBlog.Api.Controllers
 			return Ok(categories);
 		}
 
+		[HttpGet("{id}")]
+		public async Task<ActionResult<Category>> GetCategoryById(int id)
+		{
+			var category = await _categoryRepository.GetByIdAsync(id);
+			if (category == null)
+			{
+				return NotFound();
+			}
+
+			return Ok(category);
+		}
+
 		// POST: api/Categories
 		[HttpPost]
 		[Authorize(Roles = "Admin")]
@@ -37,6 +49,36 @@ namespace KBlog.Api.Controllers
 
 			var createdCategory = await _categoryRepository.AddAsync(newCategory);
 			return Ok(createdCategory);
+		}
+
+		[HttpPut("{id}")]
+		[Authorize(Roles = "Admin")]
+		public async Task<IActionResult> UpdateCategory(int id, [FromBody] CreateCategoryDto categoryDto) {
+			var categoryToUpdate = await _categoryRepository.GetByIdAsync(id);
+			if (categoryToUpdate == null) {
+				return NotFound();	
+			}
+
+			categoryToUpdate.Name = categoryDto.Name;
+			categoryToUpdate.Description = categoryDto.Description;
+			categoryToUpdate.Slug  = categoryDto.Name.Trim().ToLower().Replace(" ", "-");
+			await _categoryRepository.UpdateAsync(categoryToUpdate);
+
+			return NoContent();
+		}
+
+		[HttpDelete("{id}")]
+		[Authorize(Roles = "Admin")]
+		public async Task<IActionResult> DeleteCategory(int id)
+		{
+			var categoryToDelete = await _categoryRepository.GetByIdAsync(id);
+			if (categoryToDelete == null)
+			{
+				return NotFound();
+			}
+			
+			await _categoryRepository.DeleteAsync(categoryToDelete);
+			return NoContent();
 		}
 	}
 }
